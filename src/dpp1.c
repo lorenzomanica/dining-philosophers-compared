@@ -19,6 +19,12 @@
 /* philosopher is eating */
 #define EATING 2 			    
 
+#define ROUNDS 10
+/* array to keep count how many times one have eaten */
+int rounds[N];
+
+bool finish = false;
+
 /* array to keep track of everyone’s state */
 int state[N];
 
@@ -91,13 +97,14 @@ void put_forks(int i)
 void philosopher(int i) 		
 {
     /* repeat forever */
-    while (true) {
+    while (rounds[i]<ROUNDS) {
         /* philosopher is thinking */
         think(); 			    
         /* acquire two forks or block */
         take_forks(i); 			
         /* yum-yum, spaghetti */
-        eat();   			    
+        eat();   	
+        rounds[i]++;
         /* put both forks back on table */
         put_forks(i);           
     }
@@ -116,13 +123,18 @@ void * watcher_task(void * arg) {
     {
         char * str = malloc(4*N*sizeof(char));
         int i;
+        int finished = N;
         for (i=0; i<N; i++) {
             char val[4];
-            sprintf(val, "%d ", state[i]);
+            sprintf(val, "%d ", rounds[i]);
             strcat(str, val);
+            if (rounds[i]==ROUNDS)
+                finished--;
         }
         printf("%s\n", str);
-        usleep(500000);
+        if (finished==0)
+            return 0;
+        usleep(10000);
     }
 }
 
