@@ -16,7 +16,7 @@ run-parallel2:
 	go run src/dpp2.go
 
 clean:
-	rm *.o
+	rm *.o *.class
 
 version:
 	make -version
