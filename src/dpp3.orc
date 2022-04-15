@@ -95,18 +95,11 @@ holds both its forks).
 -}
 def philosophers(n :: Integer) =
   {- channels -}
-  val cs = uncurry(Table(n, lambda (_::Top) = Table(n, lambda(_::Top) = Channel[Message]())))
+  val cs = Table(n, lambda (_) = Channel())
 
-  {- first row -}
-  philosopher((0,0), cs(0,0), Set[Xmitter]([]))
-  | for(1, n) >j>
-    philosopher((0,j), cs(0,j), Set[Xmitter]([cs(0,j-1).put]))
+  philosopher(0, cs(0), Set[Xmitter]([]))
+  | for(1, n-1) >i>
+    philosopher(i, cs(i), Set[Xmitter]([cs(i-1).put]))
+  | philosopher(n-1, cs(n-1), Set[Xmitter]([cs(n-2).put, cs(0).put]))
 
-  {- remaining rows -}
-  | for(1, n) >i> (
-      philosopher((i,0), cs(i,0), Set[Xmitter]([cs(i-1,0).put]))
-      | for(1, n) >j>
-        philosopher((i,j), cs(i,j), Set[Xmitter]([cs(i-1,j).put, cs(i,j-1).put]))
-    )
-
-philosophers(2)
+philosophers(5)
