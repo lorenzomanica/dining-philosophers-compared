@@ -1,9 +1,7 @@
 package main
 
 import (
-	"hash/fnv"
 	"log"
-	"math/rand"
 	"os"
 	"time"
 )
@@ -34,20 +32,12 @@ type fork byte
 // philosopher.  Instances run concurrently.
 func philosopher(id int, phName string,
 	dominantHand, otherHand chan fork, done chan bool) {
-	// each philosopher goroutine has a random number generator,
-	// seeded with a hash of the philosopher's name.
-	h := fnv.New64a()
-	h.Write([]byte(phName))
-	rg := rand.New(rand.NewSource(int64(h.Sum64())))
 	// utility function to sleep for a randomized nominal time
-	rSleep := func(t time.Duration) {
-		time.Sleep(t/2 + time.Duration(rg.Int63n(int64(t))))
-	}
 	for h := 0; h < hunger; h++ {
-		rSleep(think)
+		time.Sleep(think)
 		<-dominantHand // pick up forks
 		<-otherHand
-		rSleep(eat)
+		time.Sleep(eat)
 		it[id] = it[id] + 1
 		dominantHand <- 'f' // put down forks
 		otherHand <- 'f'
