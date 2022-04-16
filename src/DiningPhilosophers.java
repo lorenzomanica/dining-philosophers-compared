@@ -11,8 +11,8 @@ public class DiningPhilosophers {
 
     private static final int FORK_FREE = -1;
 
-    private static final long THINK_TIME = 3000;
-    private static final long EAT_TIME = 1000;
+    private static final long THINK_TIME = 500;
+    private static final long EAT_TIME = 100;
 
     public static void main(String[] args) {
         DiningPhilosophers program = new DiningPhilosophers();
@@ -24,11 +24,13 @@ public class DiningPhilosophers {
     int[] philosopher;
     Semaphore[] fork;
     int[] forkMap;
+    int[] iterations;
 
     public DiningPhilosophers() {
         philosopher = new int[N];
         forkMap = new int[N];
         fork = new Semaphore[N];
+        iterations = new int[N];
 
         for (int i = 0; i < N; i++) {
             fork[i] = new Semaphore(1);
@@ -40,29 +42,24 @@ public class DiningPhilosophers {
         try {
             for (int n = 0; n < ROUNDS; n++) {
                 for (int i = 0; i < N; i++) {
+                    printStates();
                     think(i);
                     philosopher[i] = PHIL_HUNGRY;
                     takeForks(i);
                     eat(i);
-                    printStates();
                     leaveForks(i);
                     philosopher[i] = PHIL_THINKING;
                 }
             }
         } catch (Exception e) {
+            System.out.println("End of program");
         }
     }
 
     private void printStates() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Phils: ");
         for (int k = 0; k < N; k++) {
-            sb.append(philosopher[k]).append("\t");
-        }
-        sb.append("\n");
-        sb.append("Forks: ");
-        for (int k = 0; k < N; k++) {
-            sb.append(forkMap[k]).append("\t");
+            sb.append(iterations[k]).append(" ");
         }
         System.out.println(sb);
     }
@@ -92,17 +89,14 @@ public class DiningPhilosophers {
         if (forkMap[i] == i && forkMap[rightFork(i)] == i) {
             philosopher[i] = PHIL_EATING;
             Thread.sleep(EAT_TIME);
+            iterations[i]++;
         }
     }
 
     private void leaveForks(int i) {
-        synchronized (forkMap) {
-            forkMap[rightFork(i)] = FORK_FREE;
-            fork[rightFork(i)].release();
-        }
-        synchronized (forkMap) {
-            forkMap[i] = FORK_FREE;
-            fork[i].release();
-        }
+        forkMap[rightFork(i)] = FORK_FREE;
+        fork[rightFork(i)].release();
+        forkMap[i] = FORK_FREE;
+        fork[i].release();
     }
 }

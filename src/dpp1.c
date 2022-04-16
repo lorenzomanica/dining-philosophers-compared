@@ -42,12 +42,12 @@ typedef struct {
 
 void think()
 {
-    usleep(3000000);
+    usleep(500000);
 }
 
 void eat()
 {
-    usleep(1000000);
+    usleep(100000);
 }
 
 
@@ -134,7 +134,7 @@ void * watcher_task(void * arg) {
         printf("%s\n", str);
         if (finished==0)
             return 0;
-        usleep(10000);
+        usleep(50000);
     }
 }
 
