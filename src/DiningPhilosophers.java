@@ -16,24 +16,23 @@ public class DiningPhilosophers implements Runnable {
     private static final long THINK_TIME = 500;
     private static final long EAT_TIME = 100;
 
+    public static final int[] iterations = new int[N];
+    
+
     public static void main(String[] args) {
-        long t1 = System.currentTimeMillis();
         ExecutorService pool = Executors.newFixedThreadPool(2);
         pool.submit(new Watcher());
         pool.submit(new DiningPhilosophers());
-        System.out.println(System.currentTimeMillis() - t1);
     }
 
     int[] philosopher;
     Semaphore[] fork;
     int[] forkMap;
-    public static final int[] iterations = new int[N];
 
     public DiningPhilosophers() {
         philosopher = new int[N];
         forkMap = new int[N];
         fork = new Semaphore[N];
-        // iterations = new int[N];
 
         for (int i = 0; i < N; i++) {
             fork[i] = new Semaphore(1);
@@ -58,14 +57,6 @@ public class DiningPhilosophers implements Runnable {
         } catch (Exception e) {
             System.out.println("End of program");
         }
-    }
-
-    private void printStates() {
-        StringBuilder sb = new StringBuilder();
-        for (int k = 0; k < N; k++) {
-            sb.append(iterations[k]).append(" ");
-        }
-        System.out.println(sb);
     }
 
     private void think(int i) throws InterruptedException {
